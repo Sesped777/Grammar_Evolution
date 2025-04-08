@@ -1,13 +1,8 @@
 import random
 import re
 
-# ---------------- Gramática ----------------
-gramatica = {
-    "<E>": ["<E> OR <T>", "<E> XOR <T>", "<T>"],
-    "<T>": ["<T> AND <F>", "<F>"],
-    "<F>": ["NOT <F>", "(<E>)", "<num>"],
-    "<num>": ["A", "B", "C"]
-}
+from Const import(gramatica)
+
 
 # ---------------- Decodificación ----------------
 def decodificacion(genotipo, gramatica, simbolo_inicial="<E>"):
@@ -46,38 +41,6 @@ def evaluar_expresion(expr, variables):
     except:
         return None
 
-# ---------------- Fitness ----------------
-tabla_verdad_sum= [
-    {"A": False, "B": False, "C": False, "target": False},
-    {"A": False, "B": False, "C": True,  "target": True},
-    {"A": False, "B": True,  "C": False, "target": True},
-    {"A": False, "B": True,  "C": True,  "target": False},
-    {"A": True,  "B": False, "C": False, "target": True},
-    {"A": True,  "B": False, "C": True,  "target": False},
-    {"A": True,  "B": True,  "C": False, "target": False},
-    {"A": True,  "B": True,  "C": True,  "target": True},
-]
-
-tabla_verdad_Prueba = [
-    {"A": False, "B": False, "C": False, "target": False},
-    {"A": False, "B": False, "C": True,  "target": True},
-    {"A": False, "B": True,  "C": False, "target": True},
-    {"A": False, "B": True,  "C": True,  "target": False},
-    {"A": True,  "B": False, "C": False, "target": True},
-    {"A": True,  "B": False, "C": True,  "target": False},
-    {"A": True,  "B": True,  "C": False, "target": False},
-    {"A": True,  "B": True,  "C": True,  "target": True},
-]
-tabla_verdad_carry = [
-    {"A": False, "B": False, "C": False, "target": False},
-    {"A": False, "B": False, "C": True,  "target": False},
-    {"A": False, "B": True,  "C": False, "target": False},
-    {"A": False, "B": True,  "C": True,  "target": True},
-    {"A": True,  "B": False, "C": False, "target": False},
-    {"A": True,  "B": False, "C": True,  "target": True},
-    {"A": True,  "B": True,  "C": False, "target": True},
-    {"A": True,  "B": True,  "C": True,  "target": True},   
-]
 
 def fitness(genotipo, gramatica,tabla):
     expr = decodificacion(genotipo, gramatica)
@@ -108,30 +71,3 @@ def cruce(p1, p2):
 def Selecion_Torneo(population, k=3):
     competitors = random.sample(population, k)
     return max(competitors, key=lambda ind: ind["fitness"])
-
-
-def Selecion_Torneo_dual(population, k=3):
-    competitors = random.sample(population, k)
-    return max(competitors, key=lambda ind: ind["fitness_total"])
-
-
-def fitness_dual(genotipo, gramatica):
-    expr_sum = decodificacion(genotipo, gramatica)
-    expr_carry = expr_sum  # misma expresión, se evalúa en ambos contextos
-
-    score_sum = 0
-    score_carry = 0
-
-    for row_sum, row_carry in zip(tabla_verdad_sum, tabla_verdad_carry):
-        inputs = {k: row_sum[k] for k in ["A", "B", "C"]}
-
-        out_sum = evaluar_expresion(expr_sum, inputs)
-        out_carry = evaluar_expresion(expr_carry, inputs)
-
-        if out_sum is not None and out_sum == row_sum["target"]:
-            score_sum += 1
-        if out_carry is not None and out_carry == row_carry["target"]:
-            score_carry += 1
-
-    return (score_sum, score_carry), expr_sum  # usamos la misma expresión para ambos
-

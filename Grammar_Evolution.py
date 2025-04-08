@@ -1,7 +1,8 @@
 from Funciones import (
-    gramatica, fitness, crear_individuos, mutacion,
-    cruce, Selecion_Torneo, tabla_verdad_sum,tabla_verdad_carry,tabla_verdad_Prueba
+    fitness, crear_individuos, mutacion,
+    cruce, Selecion_Torneo,
 )
+from Const import (gramatica, tabla_verdad_carry, tabla_verdad_Prueba, tabla_verdad_sum)
 
 POP_SIZE = 100
 GENOTYPE_LENGTH = 20
